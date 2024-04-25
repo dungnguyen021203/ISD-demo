@@ -14,9 +14,8 @@ const conn = mysql.createConnection({
 
 exports.login = async (req, res) => {
     try {
-        const {  //... , //...
-                                 } = req.body;
-        if (!email || !password) {
+        const {  username , password } = req.body;
+        if (!username || !password) {
             return res.status(400).render('login', {
                 message: 'Please provide account and password'
             });
@@ -343,6 +342,13 @@ exports.customerOrders = async (req, res) => {
             return res.status(500).send('Error fetching orders');
         }
 
-        return res.json(results);
+        const formattedResults = results.map(orders => ({
+            ...orders,
+            order_buyDate: moment(orders.order_buyDate).format('YYYY-MM-DD HH:mm:ss')
+        }));
+
+        console.log(formattedResults);
+
+        return res.json(formattedResults);
     });
 };

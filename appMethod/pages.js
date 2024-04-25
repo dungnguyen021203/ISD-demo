@@ -11,6 +11,15 @@ const conn = mysql.createConnection({
 });
 
 
+// Acces "/" need a login - Undo
+// router.get('/login', (req, res) => {
+//   res.sendFile(path.join(__dirname, '..', 'views', 'pages', 'login.html'));
+// });
+
+// router.get('/register', (req, res) => {
+//   res.sendFile(path.join(__dirname, '..', 'views', 'pages', 'register.html'));
+// });
+
 router.get('/home', authController.home)
 
 router.get('/products', authController.productsShowcase);
@@ -19,6 +28,15 @@ router.get('/trash/menu', authController.trash);
 router.get('/trash', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'views', 'pages', 'trash.html'));
 });
+
+router.get('/orders', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'views', 'pages', 'orders.html'));
+});9
+
+router.get('/page/products', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'views', 'pages', 'products.html'));
+});
+
 
 
 router.delete('/delete/:id', authController.deleteCustomer);
