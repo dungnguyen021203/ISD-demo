@@ -15,7 +15,7 @@ function UserCards({users=[], buttonTitle ="remove"}){
                             </div>
                         </div>
                         <div class="customer-description">
-                            <h4>Bronze</h4>
+                            <h4><span>${user.customer_type}</span></h4>
                             <span class="detail" data-id=${user.customer_id} data-button>Details</span>
                             <span class="customer-remove" data-remove data-button>${buttonTitle}</span>
                         </div>

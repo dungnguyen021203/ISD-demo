@@ -25,8 +25,8 @@ function UserInfor() {
                 <div class="form-user__group">
                     <label for="customerType">Customer Type: </label>
                     <select name="customerType" data-type>
-                        <option value="CN">Personal (CN)</option>
-                        <option value="DN">Enterprise</option>
+                        <option value="Individual">Individual</option>
+                        <option value="Enterprise">Enterprise</option>
                         <option value="NONE">None</option>
                     </select>
                 </div>

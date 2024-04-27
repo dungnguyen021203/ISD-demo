@@ -117,7 +117,7 @@ function loadUserForm({ mode = 'add' }) {
         const cc = container.querySelector('[data-cc]');
         cc.value = curUser.customer_citizenID;
         const type = container.querySelector('[data-type]');
-        type.value = 'CN';
+        type.value = 'Individual';
 
     }
     const backButton = container.querySelector('[data-back]');
@@ -259,7 +259,7 @@ async function sendForm({
     const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
     // Check if any field is empty or if email does not match the pattern
-    if (!name.value || !phone.value || !cc.value || type.value === 'NONE' ||
+    if (!name.value || !phone.value || !cc.value || !type.value ||
         !email.value || !emailPattern.test(email.value)) {
         console.error('Validation failed: All fields must be filled correctly.');
         return false;

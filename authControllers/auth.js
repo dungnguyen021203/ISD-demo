@@ -108,7 +108,7 @@ async function queryDatabaseForCustomerCount(dateString) {
 
 
 const generateCustomId = async (customerType, date) => {
-    const typeAbbreviation = customerType === 'CN' ? 'CN' : customerType === 'DN' ? 'DN' : 'NONE';
+    const typeAbbreviation = customerType === 'Individual' ? 'CN' : customerType === 'Enterprise' ? 'DN' : 'NONE';
 
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -351,4 +351,90 @@ exports.customerOrders = async (req, res) => {
 
         return res.json(formattedResults);
     });
+};
+
+//TODO: Search for a customer
+exports.customerSearch = async (req, res) => {
+    const search  = req.query.search;
+    const trashSearch = req.query.trashSearch;
+
+    const query = `
+        SELECT * 
+        FROM Customers
+        WHERE customer_name LIKE ?`;
+    const trashQuery = `SELECT * FROM Customers WHERE customer_name LIKE ? AND is_deleted = TRUE`;
+    if (trashSearch) {
+          conn.query(trashQuery, [`%${trashSearch}%`], (error, results) => 
+            {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).send('Error searching customers');
+                }
+                res.json(results);
+            }
+        );
+    }
+    else {
+        conn.query(query, [`%${search}%`], (error, results) => 
+            {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).send('Error searching customers');
+                }
+                res.json(results);
+            }
+        );
+    }
+};
+
+//TODO: Sort the customers by name
+exports.customerSorting = async (req, res) => {
+    const sort = req.query.sort ;
+    const trashSort = req.query.trashSort;
+    const query = `SELECT * FROM Customers ORDER BY customer_name ${sort}`;
+    const trashQuery = `SELECT * FROM Customers WHERE is_deleted = TRUE ORDER BY customer_name ${trashSort}`;
+
+    if (trashSort) {
+        conn.query(trashQuery, (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Error sorting customers');
+            }
+            res.json(results);
+        });
+    }
+    else {
+        conn.query(query, (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Error sorting customers');
+            }
+        res.json(results);
+    })};
+};
+
+//TODO: Filter the customers by category
+exports.customerFilterCategory = async (req, res) => {
+    const category = req.query.category;
+    const trashCategory = req.query.trashCategory;
+    const query = `SELECT * FROM Customers WHERE customer_type = ?`;
+    const trashQuery = query + `AND is_deleted = TRUE`;
+
+    if (trashCategory) {
+        conn.query(trashQuery, [trashCategory], (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Error filtering customers');
+            }
+            res.json(results);
+        });
+    }
+    else {
+        conn.query(query, [category], (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Error filtering customers');
+            }
+        res.json(results);
+    })};
 };

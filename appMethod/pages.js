@@ -49,4 +49,10 @@ router.patch('/update/:id', authController.editCustomer);
 
 router.get('/customerOrders/:id', authController.customerOrders);
 
+router.get('/customerSearch', authController.customerSearch);
+
+router.get('/customerSorting', authController.customerSorting);
+
+router.get('/customerFilterCategory', authController.customerFilterCategory);
+
 module.exports = router;
