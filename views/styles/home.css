@@ -323,7 +323,14 @@ h1 {
 	padding: 0 20px;
 }
 
-.form-user__group input {
+.form-user__group input{
+	padding: 8px 8px;
+	border: 1px solid #666;
+	font-size: 15px;
+	width: 80%;
+}
+
+.form-user__group select{
 	padding: 8px 8px;
 	border: 1px solid #666;
 	font-size: 15px;
