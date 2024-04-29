@@ -6,13 +6,10 @@ const upload = multer({ dest: 'uploads/' });
 
 const router = express.Router();
 
-// ADD  authController.isLoggedIn
-router.post('/', authController.addCustomer );
+router.post('/', authController.isLoggedIn, authController.addCustomer , (req, res) => { req.user });
 
-// router.post('/register', authController.register )
+router.post('/login', authController.login );
 
-// router.post('/login', authController.login );
-
-// router.get('/logout', authController.logout);
+router.get('/logout', authController.logout);
 
 module.exports = router;

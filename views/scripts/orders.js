@@ -16,22 +16,25 @@ async function showOrders(){
     setPopup();
 }
 
-function setPopup(){
+function setPopup() {
     const buttons = document.querySelectorAll('[data-order-popup]');
     buttons.forEach(button => {
         button.onclick = () => {
-            const body = document.querySelector('body')
-            const initialHtml = body.innerHTML;
-            body.innerHTML += Popup2();
+            const orderId = button.getAttribute('data-order-id');
+            const orders = JSON.parse(localStorage.getItem('orders'));
+            const order = orders.find(o => o.order_id.toString() === orderId);
 
-            const closeBtn = document.querySelector('[data-popup2-close]')
-            console.log(closeBtn)
+            const body = document.querySelector('body');
+            const initialHtml = body.innerHTML;
+            body.innerHTML += Popup2(order);
+
+            const closeBtn = document.querySelector('[data-popup2-close]');
             closeBtn.onclick = () => {
-                body.innerHTML = initialHtml
+                body.innerHTML = initialHtml;
                 setPopup();
-            }
-        }
-    })
+            };
+        };
+    });
 }
 
 await showOrders();

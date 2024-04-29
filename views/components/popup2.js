@@ -1,18 +1,29 @@
-function Popup2(){
+function Popup2(order) {
     return `
         <div class="popup" id="popup">
             <div class="popup-inner">
-            <div class="popup__photo">
-                <img src="https://images.unsplash.com/photo-1515224526905-51c7d77c7bb8?ixlib=rb-0.3.5&s=9980646201037d28700d826b1bd096c4&auto=format&fit=crop&w=700&q=80" alt="">
-            </div>
-            <div class="popup__text">
-                <h1>Lorem ipsum dolor sit amet</h1>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ex velit, viverra non vulputate vitae, blandit vitae nisl. Nullam fermentum orci et erat viverra bibendum. Aliquam sed varius nibh, vitae mattis purus. Mauris elementum sapien non ullamcorper vulputate. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed eget felis sit amet eros viverra pulvinar.</p>
-            </div>
-            <a class="popup__close" data-popup2-close href="#">X</a>
+                <div class="popup__text">
+                    <h1>Order Details</h1>
+                    <p>Order Code: #${order.order_code}</p>
+                    <p>Order Time: ${order.order_buyDate}</p>
+                    <p>Order ID: ${order.order_id}</p>
+                    <p>Total Price: ${order.order_cost}</p>
+                    <p>Payment Status: ${order.payment_status}</p>
+                    <p>Payment Date: ${order.payment_date}</p>
+                    <p>Shipment State: ${order.shipment_process}</p>
+                    <p>Shipment Date: ${order.shipment_date}</p>
+                    <h2>Items</h3>
+                    <p>Shoes: ${order.shoes_name}</p>
+                    <p>Brand: ${order.shoes_brand}</p>
+                    <p>Color: ${order.shoes_color}</p>
+                    <p>Type: ${order.shoes_type}</p>
+                    <p>Size: ${order.shoes_size}</p>
+                    <p>Total Items: ${order.order_amount}</p>
+
+                </div>
+                <a class="popup__close" data-popup2-close href="#">X</a>
             </div>
         </div>
-    `
+    `;
 }
-
-export default Popup2
+export default Popup2;

@@ -10,43 +10,49 @@ const conn = mysql.createConnection({
     database: process.env.DATABASE
 });
 
-// Functions (not important for now)
-
 exports.login = async (req, res) => {
     try {
-        const {  username , password } = req.body;
+        const { username, password } = req.body;
         if (!username || !password) {
-            return res.status(400).render('login', {
-                message: 'Please provide account and password'
-            });
+            return res.status(400).send('Please provide username and password');
         }
-        let salt = 'mysupersercretpassword';
-        let hashedPassword = await md5(password + salt);
+        let salt = 'mysupersercretpassword'; 
+        let hashedPassword = md5(password + salt);
 
-        conn.query('', [], async (error, results) => {
-            console.log(results);
-            if (condition) {
-                return 0;
-            } else {
-                const userId = results[0].user_id;
-                res.cookie('loggedInUserId', userId, {
-                    expires: new Date(Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
+        const query = `
+            SELECT sales_id, username, role FROM Salespersons
+            WHERE username = ? AND password = ?
+        `;
+
+        conn.query(query, [username, hashedPassword], (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Error during database query');
+            }
+            if (results.length > 0) {
+                const sales = results[0];
+                res.cookie('loggedInUserId', sales.sales_id, {
+                    expires: new Date(Date.now() + 8 * 3600000), 
                     httpOnly: true
                 });
-                res.status(200).redirect('/');
+                res.redirect('/home');
+            } else {
+                res.send('Login failed');
             }
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        res.status(500).send('Server error');
     }
 };
+
 
 exports.isLoggedIn = async (req, res, next) => {
     if (req.cookies.loggedInUserId) {
         try {
             const loggedInUserId = req.cookies.loggedInUserId;
 
-            conn.query('', [loggedInUserId], (error, result) => {
+            conn.query('SELECT * FROM Salespersons WHERE sales_id = ?', [loggedInUserId], (error, result) => {
                 if (!result || result.length === 0) {
                     res.clearCookie('loggedInUserId');
                     return res.redirect('/login');
@@ -66,18 +72,30 @@ exports.isLoggedIn = async (req, res, next) => {
 
 exports.logout = async (req, res) => {
     res.clearCookie('loggedInUserId');
-    res.status(200).redirect('/');
+    res.status(200).redirect('/login');
 };
 
-
-// IMPORTANT: The following functions are incomplete and should be used as a reference only.
-// TODO: View home page with all customers
-
 exports.home = async (req, res) => {
-
+    const saleID = req.cookies.loggedInUserId;
+    if(req.user.role === 'admin') {
+        const query = `
+            SELECT s.*, c.*
+            FROM Salespersons s
+            JOIN Customers c ON s.sales_id = c.sales_id
+            ORDER BY s.sales_id
+        `;
+        conn.query(query, (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Error fetching salespersons and customers');
+            }
+            return res.json(results);
+        }
+        );
+    } else {
+    
     conn.query(
-        'SELECT * FROM Customers Where is_deleted = FALSE order by customer_id desc;',
-        (error, results) => {
+        'SELECT * FROM Customers Where is_deleted = FALSE and sales_id = ? order by customer_id desc;', [saleID], (error, results) => {
             if (error) {
                 console.error(error);
                 return res.status(500).send('Error fetching customers');
@@ -85,6 +103,7 @@ exports.home = async (req, res) => {
             return res.json(results)
         }
     );
+}
 };
 
 // TODO: Add a new customer, take the real date
@@ -126,8 +145,8 @@ const generateCustomId = async (customerType, date) => {
 
 
 exports.addCustomer = async (req, res) => {
-    const { name, phone, cc, email, type } = req.body;
-    const saleID = 1;
+    const { name, phone, cc, email, type, salesid } = req.body;
+    const saleID = req.cookies.loggedInUserId;
 
     try {
         const date = new Date();
@@ -138,13 +157,24 @@ exports.addCustomer = async (req, res) => {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
-        conn.query(insertCustomerQuery, [saleID, type, customerCode, name, email, phone, cc, date, saleID], (customerError, customerResults) => {
-            if (customerError) {
-                console.error(customerError);
-                return res.status(500).send('Error adding customer');
-            }
+        if (req.user.role === 'admin') {
+            conn.query(insertCustomerQuery, [salesid, type, customerCode, name, email, phone, cc, date, salesid], (customerError, customerResults) => {
+                if (customerError) {
+                    console.error(customerError);
+                    return res.status(500).send('Error adding customer');
+                }
+                return res.json({ message: "Customer added successfully" });
+            });
+        }
+        else {
+            conn.query(insertCustomerQuery, [saleID, type, customerCode, name, email, phone, cc, date, saleID], (customerError, customerResults) => {
+                if (customerError) {
+                    console.error(customerError);
+                    return res.status(500).send('Error adding customer');
+                }
             return res.json({ message: "Customer added successfully" });
-        });
+            })
+        };
     } catch (error) {
         console.error(error);
         return res.status(500).send('Server error');
@@ -157,10 +187,11 @@ exports.addCustomer = async (req, res) => {
 // TODO: View a customer's details
 exports.details = async (req, res) => {
     const customerId = req.params.id;
+    const saleID = req.cookies.loggedInUserId;
 
-    const customerQuery = 'SELECT * FROM Customers WHERE customer_id = ?';
+    const customerQuery = 'SELECT * FROM Customers WHERE customer_id = ? and sales_id = ?';
 
-    conn.query(customerQuery, [customerId], (error, customerResults) => {
+    conn.query(customerQuery, [customerId, saleID] , (error, customerResults) => {
         if (error) {
             console.error(error);
             return res.status(500).send('Error fetching customer details');
@@ -198,7 +229,25 @@ exports.details = async (req, res) => {
     });
 };
 
-//TODO: Soft delete the customer and move it to the trash can, it can recover before 10 days
+//TODO: View salesperson's details
+exports.salespersonDetails = async (req, res) => {
+    const query = 'SELECT * FROM Salespersons WHERE role = "sales"';
+    if (req.user.role === 'admin') {
+        conn.query(query, (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Error fetching salespersons');
+            }
+            return res.json(results);
+        }
+        );
+    }
+    else {
+        return res.status(403).send('You are not authorized to view this page');
+    }
+};
+
+//TODO: Soft delete the customer and move it to the trash can, it can recover before 30 days
 exports.deleteCustomer = async (req, res) => {
     const customerId = req.params.id;
 
@@ -236,6 +285,29 @@ exports.recoverCustomer = async (req, res) => {
             return res.status(404).send('Customer not found');
         }
     });
+};
+
+//TODO: Permantly delete the customer from the trash can for admin only
+exports.permanentDelete = async (req, res) => {
+    const customerId = req.params.id;
+    const permanentlyDeleteQuery = 'DELETE FROM Customers WHERE customer_id = ?;';
+    if (req.user.role === 'admin') {
+        conn.query(permanentlyDeleteQuery, [customerId], (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Error deleting customer');
+            }
+            if (results.affectedRows > 0) {
+                return res.json({ message: 'Customer deleted successfully' });
+            }
+            else {
+                return res.status(404).send('Customer not found');
+            }
+        });
+    }
+    else {
+        return res.status(403).send('You are not authorized to do this action');
+    }
 };
 
 //TODO: Show the trash's customers
@@ -344,10 +416,10 @@ exports.customerOrders = async (req, res) => {
 
         const formattedResults = results.map(orders => ({
             ...orders,
-            order_buyDate: moment(orders.order_buyDate).format('YYYY-MM-DD HH:mm:ss')
+            order_buyDate: moment(orders.order_buyDate).format('YYYY-MM-DD HH:mm:ss'),
+            payment_date: moment(orders.payment_date).format('YYYY-MM-DD HH:mm:ss'),
+            shipment_date: moment(orders.shipment_date).format('YYYY-MM-DD HH:mm:ss')
         }));
-
-        console.log(formattedResults);
 
         return res.json(formattedResults);
     });

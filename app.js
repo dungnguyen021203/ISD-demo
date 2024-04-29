@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'views' )));
 
 //TODO 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, './views/pages/home.html'));
+    res.sendFile(path.join(__dirname, './views/pages/login.html'));
 });
 
 app.listen(8000, () => {
