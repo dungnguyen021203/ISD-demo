@@ -42,6 +42,8 @@ router.get('/details/:id', authController.isLoggedIn, authController.details, (r
 
 router.put('/recovery/:id', authController.isLoggedIn, authController.recoverCustomer, (req, res) => { req.user });
 
+router.get('/salespersonDetails', authController.isLoggedIn, authController.salespersonDetails, (req, res) => { req.user });
+
 router.patch('/update/:id', authController.isLoggedIn, authController.editCustomer, (req, res) => { req.user });
 
 router.get('/customerOrders/:id', authController.isLoggedIn, authController.customerOrders, (req, res) => { req.user });

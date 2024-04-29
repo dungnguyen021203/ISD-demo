@@ -1,6 +1,6 @@
 -- create database customer_management;
 -- drop database customer_management;
--- use customer_management;
+use customer_management;
 SET GLOBAL event_scheduler = ON;
 -- Creating the tables
 
@@ -99,14 +99,14 @@ DELIMITER ;
 -- select * from websiteaccounts;
 
 
-INSERT INTO Salespersons (sales_id, sales_name, username, password, role) VALUES (1, 'John Doe', 'johndoe1', '123456', 'admin');
-INSERT INTO Salespersons (sales_id, sales_name, username, password, role) VALUES (2, 'Jane Smith', 'janesmith', '123456', 'sales');
+INSERT INTO Salespersons (sales_id, sales_name, username, password, role) VALUES (1, 'John Doe', 'johndoe1', '01cce32e81edef5173f05c140d41412c', 'admin');
+INSERT INTO Salespersons (sales_id, sales_name, username, password, role) VALUES (2, 'Jane Smith', 'janesmith', '01cce32e81edef5173f05c140d41412c', 'sales');
 INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user1', 'password1', TRUE);
 INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user2', 'password2', FALSE);
 INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user3', 'password3', FALSE);
-INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (1, 'Individual', 'CUST001', 'Alice Brown', 'alice@example.com', '555-0101', '123456789', '2023-04-01', 1);
-INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (1, 'Enterprise', 'CUST002', 'Bob Green', 'bob@example.com', '555-0202', '987654321', '2023-04-02', 2);
-INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (1, 'Enterprise', 'CUST003', 'Dung Curry', 'dung@example.com', '555-0303', '0348242935', '2023-04-02', 3);
+INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Individual', 'CUST001', 'Alice Brown', 'alice@example.com', '555-0101', '123456789', '2023-04-01', 1);
+INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Enterprise', 'CUST002', 'Bob Green', 'bob@example.com', '555-0202', '987654321', '2023-04-02', 2);
+INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Enterprise', 'CUST003', 'Dung Curry', 'dung@example.com', '555-0303', '0348242935', '2023-04-02', 3);
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Nike', 'Air Max', 'Running', '9', 'Black', 'Synthetic', 199.99, 'Available');
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Adidas', 'Ultra Boost', 'Running', '10', 'White', 'Mesh', 180.50, 'Available');
 INSERT INTO ShoeImages (shoes_id, image_url) VALUES (1, 'http://example.com/image1.jpg');
@@ -135,6 +135,8 @@ INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color,
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Skechers', 'Go Walk', 'Walking', '8', 'Black', 'Mesh', 50.00, 'Available');
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Altra', 'Torin', 'Running', '9', 'Grey', 'Mesh', 130.00, 'Available');
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Salomon', 'Speedcross', 'Trail Running', '10', 'Black', 'Mesh', 130.00, 'Available');
+
+
 
 
     
