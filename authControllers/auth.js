@@ -7,16 +7,18 @@ const moment = require('moment');
 const conn = mysql.createConnection({
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
-    database: process.env.DATABASE
+    database: process.env.DATABASE,
 });
 
 exports.login = async (req, res) => {
     try {
         const { username, password } = req.body;
         if (!username || !password) {
-            return res.status(400).send('Please provide username and password');
+            return res
+                .status(400)
+                .send('Please provide username and password');
         }
-        let salt = 'mysupersercretpassword'; 
+        let salt = 'mysupersercretpassword';
         let hashedPassword = md5(password + salt);
 
         const query = `
@@ -32,8 +34,8 @@ exports.login = async (req, res) => {
             if (results.length > 0) {
                 const sales = results[0];
                 res.cookie('loggedInUserId', sales.sales_id, {
-                    expires: new Date(Date.now() + 8 * 3600000), 
-                    httpOnly: true
+                    expires: new Date(Date.now() + 8 * 3600000),
+                    httpOnly: true,
                 });
                 res.redirect('/home');
             } else {
@@ -46,21 +48,24 @@ exports.login = async (req, res) => {
     }
 };
 
-
 exports.isLoggedIn = async (req, res, next) => {
     if (req.cookies.loggedInUserId) {
         try {
             const loggedInUserId = req.cookies.loggedInUserId;
 
-            conn.query('SELECT * FROM Salespersons WHERE sales_id = ?', [loggedInUserId], (error, result) => {
-                if (!result || result.length === 0) {
-                    res.clearCookie('loggedInUserId');
-                    return res.redirect('/login');
-                }
+            conn.query(
+                'SELECT * FROM Salespersons WHERE sales_id = ?',
+                [loggedInUserId],
+                (error, result) => {
+                    if (!result || result.length === 0) {
+                        res.clearCookie('loggedInUserId');
+                        return res.redirect('/login');
+                    }
 
-                req.user = result[0];
-                return next();
-            });
+                    req.user = result[0];
+                    return next();
+                }
+            );
         } catch (error) {
             console.log(error);
             return res.redirect('/login');
@@ -75,9 +80,9 @@ exports.logout = async (req, res) => {
     res.status(200).redirect('/login');
 };
 
-exports.home = async (req, res) => {
+exports.home = async (req, res, next) => {
     const saleID = req.cookies.loggedInUserId;
-    if(req.user.role === 'admin') {
+    if (req.user.role === 'admin') {
         const query = `
             SELECT s.*, c.*
             FROM Salespersons s
@@ -87,34 +92,38 @@ exports.home = async (req, res) => {
         conn.query(query, (error, results) => {
             if (error) {
                 console.error(error);
-                return res.status(500).send('Error fetching salespersons and customers');
+                return res
+                    .status(500)
+                    .send('Error fetching salespersons and customers');
             }
             return res.json(results);
-        }
-        );
+        });
     } else {
-    
-    conn.query(
-        'SELECT * FROM Customers Where is_deleted = FALSE and sales_id = ? order by customer_id desc;', [saleID], (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Error fetching customers');
+        conn.query(
+            'SELECT * FROM Customers Where is_deleted = FALSE and sales_id = ? order by customer_id desc;',
+            [saleID],
+            (error, results) => {
+                if (error) {
+                    console.error(error);
+                    return res
+                        .status(500)
+                        .send('Error fetching customers');
+                }
+                return res.json(results);
             }
-            return res.json(results)
-        }
-    );
-}
+        );
+    }
 };
 
 // TODO: Add a new customer, take the real date
 async function queryDatabaseForCustomerCount(dateString) {
     return new Promise((resolve, reject) => {
         const query = `
-            SELECT COUNT(*) AS count 
-            FROM Customers 
+            SELECT COUNT(*) AS count
+            FROM Customers
             WHERE DATE_FORMAT(add_date, '%d%m%Y') = ?
         `;
-        
+
         conn.query(query, [dateString], (error, results) => {
             if (error) {
                 reject(error);
@@ -125,9 +134,13 @@ async function queryDatabaseForCustomerCount(dateString) {
     });
 }
 
-
 const generateCustomId = async (customerType, date) => {
-    const typeAbbreviation = customerType === 'Individual' ? 'CN' : customerType === 'Enterprise' ? 'DN' : 'NONE';
+    const typeAbbreviation =
+        customerType === 'Individual'
+            ? 'CN'
+            : customerType === 'Enterprise'
+                ? 'DN'
+                : 'NONE';
 
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -135,14 +148,17 @@ const generateCustomId = async (customerType, date) => {
 
     const dateString = `${day}${month}${year}`;
 
-    const customerCountToday = await queryDatabaseForCustomerCount(dateString);
-    const sequentialNumber = (customerCountToday + 1).toString().padStart(3, '0');
+    const customerCountToday = await queryDatabaseForCustomerCount(
+        dateString
+    );
+    const sequentialNumber = (customerCountToday + 1)
+        .toString()
+        .padStart(3, '0');
 
     const customId = `${typeAbbreviation}${sequentialNumber}${dateString}`;
-    
+
     return customId;
 };
-
 
 exports.addCustomer = async (req, res) => {
     const { name, phone, cc, email, type, salesid } = req.body;
@@ -158,75 +174,116 @@ exports.addCustomer = async (req, res) => {
         `;
 
         if (req.user.role === 'admin') {
-            conn.query(insertCustomerQuery, [salesid, type, customerCode, name, email, phone, cc, date, salesid], (customerError, customerResults) => {
-                if (customerError) {
-                    console.error(customerError);
-                    return res.status(500).send('Error adding customer');
+            conn.query(
+                insertCustomerQuery,
+                [
+                    salesid,
+                    type,
+                    customerCode,
+                    name,
+                    email,
+                    phone,
+                    cc,
+                    date,
+                    salesid,
+                ],
+                (customerError, customerResults) => {
+                    if (customerError) {
+                        console.error(customerError);
+                        return res
+                            .status(500)
+                            .send('Error adding customer');
+                    }
+                    return res.json({
+                        message: 'Customer added successfully',
+                    });
                 }
-                return res.json({ message: "Customer added successfully" });
-            });
+            );
+        } else {
+            conn.query(
+                insertCustomerQuery,
+                [
+                    saleID,
+                    type,
+                    customerCode,
+                    name,
+                    email,
+                    phone,
+                    cc,
+                    date,
+                    saleID,
+                ],
+                (customerError, customerResults) => {
+                    if (customerError) {
+                        console.error(customerError);
+                        return res
+                            .status(500)
+                            .send('Error adding customer');
+                    }
+                    return res.json({
+                        message: 'Customer added successfully',
+                    });
+                }
+            );
         }
-        else {
-            conn.query(insertCustomerQuery, [saleID, type, customerCode, name, email, phone, cc, date, saleID], (customerError, customerResults) => {
-                if (customerError) {
-                    console.error(customerError);
-                    return res.status(500).send('Error adding customer');
-                }
-            return res.json({ message: "Customer added successfully" });
-            })
-        };
     } catch (error) {
         console.error(error);
         return res.status(500).send('Server error');
     }
 };
 
-
-
-
 // TODO: View a customer's details
 exports.details = async (req, res) => {
     const customerId = req.params.id;
     const saleID = req.cookies.loggedInUserId;
 
-    const customerQuery = 'SELECT * FROM Customers WHERE customer_id = ? and sales_id = ?';
+    const customerQuery =
+        'SELECT * FROM Customers WHERE customer_id = ? and sales_id = ?';
 
-    conn.query(customerQuery, [customerId, saleID] , (error, customerResults) => {
-        if (error) {
-            console.error(error);
-            return res.status(500).send('Error fetching customer details');
-        }
+    conn.query(
+        customerQuery,
+        [customerId, saleID],
+        (error, customerResults) => {
+            if (error) {
+                console.error(error);
+                return res
+                    .status(500)
+                    .send('Error fetching customer details');
+            }
 
-        if (customerResults.length > 0) {
-            const customer = customerResults[0];
-            const query = `
+            if (customerResults.length > 0) {
+                const customer = customerResults[0];
+                const query = `
                 SELECT Customers.*, WebsiteAccounts.username
                 FROM Customers
                 LEFT JOIN WebsiteAccounts ON Customers.website_account_id= WebsiteAccounts.account_id
                 WHERE Customers.customer_id = ?
             `;
-            conn.query(query, [customerId], (error, results) => {
-                if (error) {
-                    console.error(error);
-                    return res.status(500).send('Error fetching related details');
-                }
-                if (results.length === 0) {
-                    return res.json({
-                        customer: customer,
-                        CustomerActiveAccounts: "No active accounts found for this customer"
-                    });
-                }
-                else {
-                return res.json({
-                    customer: customer,
-                    CustomerActiveAccounts: results
+                conn.query(query, [customerId], (error, results) => {
+                    if (error) {
+                        console.error(error);
+                        return res
+                            .status(500)
+                            .send('Error fetching related details');
+                    }
+                    if (results.length === 0) {
+                        return res.json({
+                            customer: customer,
+                            CustomerActiveAccounts:
+                                'No active accounts found for this customer',
+                        });
+                    } else {
+                        return res.json({
+                            customer: customer,
+                            CustomerActiveAccounts: results,
+                        });
+                    }
                 });
-                }
-            });
-        } else {
-            return res.status(404).send('Customer not found');
+            } else {
+                return res.status(404).send('Customer not found');
+            }
         }
-    });
+    );
 };
 
 //TODO: View salesperson's details
@@ -239,11 +296,11 @@ exports.salespersonDetails = async (req, res) => {
                 return res.status(500).send('Error fetching salespersons');
             }
             return res.json(results);
-        }
-        );
-    }
-    else {
-        return res.status(403).send('You are not authorized to view this page');
+        });
+    } else {
+        return res
+            .status(403)
+            .send('You are not authorized to view this page');
     }
 };
 
@@ -251,7 +308,8 @@ exports.salespersonDetails = async (req, res) => {
 exports.deleteCustomer = async (req, res) => {
     const customerId = req.params.id;
 
-    const deleteQuery = 'UPDATE Customers SET is_deleted = TRUE, deleted_at = NOW() WHERE customer_id = ?;';
+    const deleteQuery =
+        'UPDATE Customers SET is_deleted = TRUE, deleted_at = NOW() WHERE customer_id = ?;';
 
     conn.query(deleteQuery, [customerId], (error, results) => {
         if (error) {
@@ -271,7 +329,8 @@ exports.deleteCustomer = async (req, res) => {
 exports.recoverCustomer = async (req, res) => {
     const customerId = req.params.id;
 
-    const recoverQuery = 'UPDATE Customers SET is_deleted = FALSE, deleted_at = NULL WHERE customer_id = ?;';
+    const recoverQuery =
+        'UPDATE Customers SET is_deleted = FALSE, deleted_at = NULL WHERE customer_id = ?;';
 
     conn.query(recoverQuery, [customerId], (error, results) => {
         if (error) {
@@ -280,7 +339,9 @@ exports.recoverCustomer = async (req, res) => {
         }
 
         if (results.affectedRows > 0) {
-            return res.json({ message: 'Customer recovered successfully' });
+            return res.json({
+                message: 'Customer recovered successfully',
+            });
         } else {
             return res.status(404).send('Customer not found');
         }
@@ -290,23 +351,30 @@ exports.recoverCustomer = async (req, res) => {
 //TODO: Permantly delete the customer from the trash can for admin only
 exports.permanentDelete = async (req, res) => {
     const customerId = req.params.id;
-    const permanentlyDeleteQuery = 'DELETE FROM Customers WHERE customer_id = ?;';
+    const permanentlyDeleteQuery =
+        'DELETE FROM Customers WHERE customer_id = ?;';
     if (req.user.role === 'admin') {
-        conn.query(permanentlyDeleteQuery, [customerId], (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Error deleting customer');
+        conn.query(
+            permanentlyDeleteQuery,
+            [customerId],
+            (error, results) => {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).send('Error deleting customer');
+                }
+                if (results.affectedRows > 0) {
+                    return res.json({
+                        message: 'Customer deleted successfully',
+                    });
+                } else {
+                    return res.status(404).send('Customer not found');
+                }
             }
-            if (results.affectedRows > 0) {
-                return res.json({ message: 'Customer deleted successfully' });
-            }
-            else {
-                return res.status(404).send('Customer not found');
-            }
-        });
-    }
-    else {
-        return res.status(403).send('You are not authorized to do this action');
+        );
+    } else {
+        return res
+            .status(403)
+            .send('You are not authorized to do this action');
     }
 };
 
@@ -319,11 +387,13 @@ exports.trash = async (req, res) => {
                 console.error(error);
                 return res.status(500).send('Error fetching customers');
             }
-            const formattedResults = results.map(customer => ({
+            const formattedResults = results.map((customer) => ({
                 ...customer,
-                deleted_at: moment(customer.deleted_at).format('YYYY-MM-DD HH:mm:ss')
+                deleted_at: moment(customer.deleted_at).format(
+                    'YYYY-MM-DD HH:mm:ss'
+                ),
             }));
-            
+
             return res.json(formattedResults);
         }
     );
@@ -337,7 +407,7 @@ exports.editCustomer = async (req, res) => {
     let queryParams = [];
     let updatedField = [];
 
-    Object.keys(updates).forEach(key => {
+    Object.keys(updates).forEach((key) => {
         if (['name', 'email', 'phoneNumber', 'citizenID'].includes(key)) {
             updatedField.push(`customer_${key} = ?`);
             queryParams.push(updates[key]);
@@ -368,33 +438,44 @@ exports.editCustomer = async (req, res) => {
 
 //TODO: Show the products showcase
 exports.productsShowcase = async (req, res) => {
-    const shoesPerPage = 9; 
-    const page = req.query.page || 1; 
+    const shoesPerPage = 9;
+    const page = req.query.page || 1;
 
-    conn.query("SELECT COUNT(*) AS count FROM Shoes", (error, countResult) => {
-        if (error) {
-            console.error(error);
-            return res.status(500).send('Error fetching product count');
-        }
-
-        const totalCount = countResult[0].count;
-        const totalPages = Math.ceil(totalCount / shoesPerPage);
-        const offset = (page - 1) * shoesPerPage;
-
-        conn.query("SELECT * FROM Shoes LIMIT ? OFFSET ?", [shoesPerPage, offset], (error, results) => {
+    conn.query(
+        'SELECT COUNT(*) AS count FROM Shoes',
+        (error, countResult) => {
             if (error) {
                 console.error(error);
-                return res.status(500).send('Error fetching products');
+                return res
+                    .status(500)
+                    .send('Error fetching product count');
             }
 
-            return res.json({
-                shoes: results,
-                totalItems: totalCount,
-                totalPages: totalPages,
-                currentPage: parseInt(page)
-            });
-        });
-    });
+            const totalCount = countResult[0].count;
+            const totalPages = Math.ceil(totalCount / shoesPerPage);
+            const offset = (page - 1) * shoesPerPage;
+
+            conn.query(
+                'SELECT * FROM Shoes LIMIT ? OFFSET ?',
+                [shoesPerPage, offset],
+                (error, results) => {
+                    if (error) {
+                        console.error(error);
+                        return res
+                            .status(500)
+                            .send('Error fetching products');
+                    }
+
+                    return res.json({
+                        shoes: results,
+                        totalItems: totalCount,
+                        totalPages: totalPages,
+                        currentPage: parseInt(page),
+                    });
+                }
+            );
+        }
+    );
 };
 
 // TODO: Show the customer's orders
@@ -414,11 +495,17 @@ exports.customerOrders = async (req, res) => {
             return res.status(500).send('Error fetching orders');
         }
 
-        const formattedResults = results.map(orders => ({
+        const formattedResults = results.map((orders) => ({
             ...orders,
-            order_buyDate: moment(orders.order_buyDate).format('YYYY-MM-DD HH:mm:ss'),
-            payment_date: moment(orders.payment_date).format('YYYY-MM-DD HH:mm:ss'),
-            shipment_date: moment(orders.shipment_date).format('YYYY-MM-DD HH:mm:ss')
+            order_buyDate: moment(orders.order_buyDate).format(
+                'YYYY-MM-DD HH:mm:ss'
+            ),
+            payment_date: moment(orders.payment_date).format(
+                'YYYY-MM-DD HH:mm:ss'
+            ),
+            shipment_date: moment(orders.shipment_date).format(
+                'YYYY-MM-DD HH:mm:ss'
+            ),
         }));
 
         return res.json(formattedResults);
@@ -427,41 +514,36 @@ exports.customerOrders = async (req, res) => {
 
 //TODO: Search for a customer
 exports.customerSearch = async (req, res) => {
-    const search  = req.query.search;
+    const search = req.query.search;
     const trashSearch = req.query.trashSearch;
 
     const query = `
-        SELECT * 
+        SELECT *
         FROM Customers
         WHERE customer_name LIKE ?`;
     const trashQuery = `SELECT * FROM Customers WHERE customer_name LIKE ? AND is_deleted = TRUE`;
     if (trashSearch) {
-          conn.query(trashQuery, [`%${trashSearch}%`], (error, results) => 
-            {
-                if (error) {
-                    console.error(error);
-                    return res.status(500).send('Error searching customers');
-                }
-                res.json(results);
+        conn.query(trashQuery, [`%${trashSearch}%`], (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Error searching customers');
             }
-        );
-    }
-    else {
-        conn.query(query, [`%${search}%`], (error, results) => 
-            {
-                if (error) {
-                    console.error(error);
-                    return res.status(500).send('Error searching customers');
-                }
-                res.json(results);
+            res.json(results);
+        });
+    } else {
+        conn.query(query, [`%${search}%`], (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Error searching customers');
             }
-        );
+            res.json(results);
+        });
     }
 };
 
 //TODO: Sort the customers by name
 exports.customerSorting = async (req, res) => {
-    const sort = req.query.sort ;
+    const sort = req.query.sort;
     const trashSort = req.query.trashSort;
     const query = `SELECT * FROM Customers ORDER BY customer_name ${sort}`;
     const trashQuery = `SELECT * FROM Customers WHERE is_deleted = TRUE ORDER BY customer_name ${trashSort}`;
@@ -474,15 +556,15 @@ exports.customerSorting = async (req, res) => {
             }
             res.json(results);
         });
-    }
-    else {
+    } else {
         conn.query(query, (error, results) => {
             if (error) {
                 console.error(error);
                 return res.status(500).send('Error sorting customers');
             }
-        res.json(results);
-    })};
+            res.json(results);
+        });
+    }
 };
 
 //TODO: Filter the customers by category
@@ -500,13 +582,13 @@ exports.customerFilterCategory = async (req, res) => {
             }
             res.json(results);
         });
-    }
-    else {
+    } else {
         conn.query(query, [category], (error, results) => {
             if (error) {
                 console.error(error);
                 return res.status(500).send('Error filtering customers');
             }
-        res.json(results);
-    })};
+            res.json(results);
+        });
+    }
 };

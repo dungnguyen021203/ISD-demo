@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;700&family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap');
+
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+
+  --lofi: #929292;
+}
+
+body{
+  font-size: 16px;
+  font-family: "Roboto Serif", serif;
+}
+
+input, button{
+  border: none;
+  outline: none
+}
+
+button{
+  cursor: pointer;
+}
+
+.logo{
+  width: 80px;
+  height: 40px;
+  object-fit: cover;
+  border: 1px solid var(--lofi);
+  border-radius: 8px;
+}

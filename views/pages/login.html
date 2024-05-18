@@ -1,11 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, width=device-width" />
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" />
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/login.css">
+  <script type="module" src="../scripts/login.js"></script>
 </head>
+
 <body>
-    <h1>Login</h1>
+  <div class="login">
+    <!-- left -->
+    <div class="login-left">
+      <img src="../assets/air-max-90.png" alt="" class="login-thumb">
+      <div class="login-intro">
+        <h2>Welcome to H2PD</h2>
+        <p>Project management</p>
+      </div>
+    </div>
+
+    <!-- right -->
+    <div class="login-right">
+      <img src="../assets/nike-am-1.png" alt="" class="logo">
+      <h2 class="login-title">Enter your login credentials</h2>
+
+      <!-- form -->
+      <form action="#" class="login-form">
+        <div class="form-group">
+          <label for="">Username</label>
+          <input type="text" placeholder="nhập tên của bạn" data-username>
+          <div class="form-error"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="">Password</label>
+          <input type="password" placeholder="nhập mật khảu" data-password>
+          <div class="form-error"></div>
+        </div>
+
+        <div class="form-error" data-auth-error></div>
+
+        <!-- submit -->
+        <button type="submit" class="form-submit">Login</button>
+      </form>
+
+      <div class="login-links">
+        Do not have a account?
+        <a href="/pages/signup.html">Create a new account?</a>
+      </div>
+    </div>
+  </div>
 </body>
+
 </html>
