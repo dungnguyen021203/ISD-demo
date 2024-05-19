@@ -242,7 +242,7 @@ exports.details = async (req, res) => {
 
     conn.query(
         customerQuery,
-        [customerId, saleID],
+        [customerId, 2],
         (error, customerResults) => {
             if (error) {
                 console.error(error);
