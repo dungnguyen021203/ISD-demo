@@ -123,5 +123,5 @@ loginBtn.onclick = async () => {
     qs('body').innerHTML = '...loading';
     setTimeout(() => {
         window.location.assign('/pages/home.html');
-    }, 5000);
+    }, 2000);
 };

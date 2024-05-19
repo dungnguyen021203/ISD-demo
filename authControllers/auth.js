@@ -77,7 +77,7 @@ exports.isLoggedIn = async (req, res, next) => {
 
 exports.logout = async (req, res) => {
     res.clearCookie('loggedInUserId');
-    res.status(200).redirect('/login');
+    res.status(200).redirect('/?#');
 };
 
 exports.home = async (req, res, next) => {

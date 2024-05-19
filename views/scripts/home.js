@@ -65,7 +65,7 @@ async function loadUserMenu() {
 
                         const data = await response.json();
 
-                        window.location.assign('http://localhost:8000/');
+                        window.location.assign('http://localhost:8000/home');
                     };
                 };
             });
