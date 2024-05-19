@@ -21,7 +21,7 @@ router.get('/login', (req, res) => {
 router.get('/products', authController.isLoggedIn, authController.productsShowcase, (req, res) => { req.user });
 
 router.get('/trash/menu', authController.isLoggedIn, authController.trash);
-router.get('/trash', (req, res) => {
+router.get('/trash', authController.isLoggedIn, (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'views', 'pages', 'trash.html'), { user: req.user });
 });
 

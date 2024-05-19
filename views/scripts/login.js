@@ -63,65 +63,56 @@ const validate = ({ type, value, min, inputNode, message }) => {
     }
 };
 
-const hiddenErrors = () => {
-    const errorNodes = document.querySelectorAll('.form-error');
-    errorNodes.forEach((errorNode) => (errorNode.textContent = ''));
-};
-
-loginBtn.onclick = async () => {
+loginBtn.onclick = async (event) => {
+    event.preventDefault();
+    
     let isPassed = true;
-    /**
-     * Validations
-     */
+
     isPassed = validate({
         type: 'isRequired',
         value: username.value,
         message: 'The username must be not empty',
         inputNode: username,
-    });
+    }) && isPassed;
 
     isPassed = validate({
         type: 'isRequired',
         value: password.value,
         message: 'The password must be not empty',
         inputNode: password,
-    });
+    }) && isPassed;
 
     isPassed = validate({
         type: 'isMinLen',
         value: password.value,
-        message: 'The password must have length of 8 at least',
+        message: 'The password must have length of 6 at least',
         inputNode: password,
         min: 5,
-    });
+    }) && isPassed;
 
     if (!isPassed) return;
 
-    /**
-     * Send request
-     */
-    const res = await fetch(`http://localhost:8000/auth/login`, {
-        method: 'post',
-        body: JSON.stringify({
-            username: username.value,
-            password: password.value,
-        }),
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    }).catch((error) => console.log(error));
-    const users = await res.json();
-    console.log(users);
+    try {
+        const res = await fetch(`http://localhost:8000/auth/login`, {
+            method: 'post',
+            body: JSON.stringify({
+                username: username.value,
+                password: password.value,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
-    const errorNode = qs('[data-auth-error]');
-    if (!users[0]) {
-        errorNode.textContent = 'Email or password is wrong';
-        return;
+        const response = await res.json();
+
+        if (res.status === 200) {
+            window.location.assign("/pages/home.html");
+        } else {
+            const errorNode = qs('[data-auth-error]');
+            errorNode.textContent = response.message;
+        }
+    } catch (error) {
+        console.error('Error during login request:', error);
     }
-
-    errorNode.textContent = '';
-    qs('body').innerHTML = '...loading';
-    setTimeout(() => {
-        window.location.assign('/pages/home.html');
-    }, 2000);
 };

@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
                 });
                 res.redirect('/home');
             } else {
-                res.send('Login failed');
+                res.status(401).json({ message: 'Invalid username or password' });
             }
         });
     } catch (error) {
@@ -77,7 +77,7 @@ exports.isLoggedIn = async (req, res, next) => {
 
 exports.logout = async (req, res) => {
     res.clearCookie('loggedInUserId');
-    res.status(200).redirect('/?#');
+    res.status(200).redirect('/');
 };
 
 exports.home = async (req, res, next) => {

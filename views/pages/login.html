@@ -1,53 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="initial-scale=1, width=device-width" />
-
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" />
-  <link rel="stylesheet" href="../styles/base.css">
-  <link rel="stylesheet" href="../styles/login.css">
-  <script type="module" src="../scripts/login.js"></script>
-</head>
-
-<body>
-  <div class="login">
-    <!-- left -->
-    <div class="login-left">
-      <img src="../assets/logo_iSD.jpg" alt="" class="login-thumb">
-      <div class="login-intro">
-        <h2>Welcome to H2PD</h2>
-        <p>Project management</p>
-      </div>
-    </div>
-
-    <!-- right -->
-    <div class="login-right">
-      <img src="../assets/logo_iSD.jpg" alt="" class="logo">
-      <h2 class="login-title">Enter your login credentials</h2>
-
-      <!-- form -->
-      <form action="#" class="login-form">
-        <div class="form-group">
-          <label for="">Username</label>
-          <input type="text" placeholder="Enter your username" data-username>
-          <div class="form-error"></div>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="initial-scale=1, width=device-width"/>
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap"/>
+        <link rel="stylesheet" href="../styles/base.css">
+        <link rel="stylesheet" href="../styles/login.css">
+        <script type="module" src="../scripts/login.js"></script>
+    </head>
+    <body>
+        <div class="login">
+            <div class="login-left">
+                <img src="../assets/logo_iSD.jpg" alt="" class="login-thumb">
+                <div class="login-intro">
+                    <h2>Welcome to H2PD</h2>
+                    <p>Project management</p>
+                </div>
+            </div>
+            <div class="login-right">
+                <img src="../assets/logo_iSD.jpg" alt="" class="logo">
+                <h2 class="login-title">Enter your login credentials</h2>
+                <form action="#" class="login-form">
+                    <div class="form-group">
+                        <label for="">Username</label>
+                        <input type="text" placeholder="Enter your username" data-username>
+                        <div class="form-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Password</label>
+                        <input type="password" placeholder="Enter your password" data-password>
+                        <div class="form-error"></div>
+                    </div>
+                    <div class="form-error" data-auth-error></div>
+                    <button type="submit" class="form-submit">Login</button>
+                </form>
+            </div>
         </div>
-
-        <div class="form-group">
-          <label for="">Password</label>
-          <input type="password" placeholder="Enter your password" data-password>
-          <div class="form-error"></div>
-        </div>
-
-        <div class="form-error" data-auth-error></div>
-
-        <!-- submit -->
-        <button type="submit" class="form-submit">Login</button>
-      </form>
-    </div>
-  </div>
-</body>
-
+    </body>
 </html>
