@@ -25,7 +25,7 @@ function PopUp({
             <br>
             ${
                 link && isAdd
-                    ? `<a href="http://localhost:8000" class="button">Go home</a>`
+                    ? `<a href="http://localhost:8000/pages/home.html" class="button">Go home</a>`
                     : ''
             }
             ${

@@ -163,6 +163,7 @@ const generateCustomId = async (customerType, date) => {
 exports.addCustomer = async (req, res) => {
     const { name, phone, cc, email, type, salesid } = req.body;
     const saleID = req.cookies.loggedInUserId;
+    console.log(salesid, saleID);
 
     try {
         const date = new Date();
@@ -177,7 +178,7 @@ exports.addCustomer = async (req, res) => {
             conn.query(
                 insertCustomerQuery,
                 [
-                    salesid,
+                    2,
                     type,
                     customerCode,
                     name,
