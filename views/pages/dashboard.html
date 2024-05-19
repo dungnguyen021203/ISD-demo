@@ -1,80 +1,107 @@
 <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <link rel="stylesheet" href="../styles/popup.css">
-        <link rel="stylesheet" href="../styles/home.css" />
-        <title>Home Page - H2PD</title>
-        <!-- Font Awesome Cdn Link -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    </head>
-
-    <body>
-        <div class="container test">
-            <nav>
-                <div class="navbar">
-                    <div class="logo-img">
-                        <img src="../assets/logo_iSD.jpg" alt="logo_img">
-                        <h1>H2PD</h1>
-                    </div>
-                    <ul>
-                        <li><a href="#">
-                                <i class="fas fa-user"></i>
-                                <span class="nav-item">Dashboard</span>
-                            </a>
-                        </li>
-
-                        <li><a href="/pages/home.html">
-                            <i class="fas fa-user"></i>
-                            <span class="nav-item">Home</span>
-                        </a>
-                        <li><a href="/trash">
-                                <i class="fas fa-tasks"></i>
-                                <span class="nav-item">Trash</span>
-                            </a>
-                        </li>
-                        <li><a href="/orders">
-                                <i class="fas fa-tasks"></i>
-                                <span class="nav-item">Orders</span>
-                            </a>
-                        </li>
-                        <li><a href="/page/products">
-                                <i class="fas fa-tasks"></i>
-                                <span class="nav-item">Products</span>
-                            </a>
-                        </li>
-                        <li><a href="/auth/logout">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span class="nav-item">Logout</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-            <hr></hr>
-            <section class="main">
-                <div class="main-top">
-                    <div class="nav-intro">
-                        <p>Welcome to H2PD. Have a nice day  !!!</p>
-                        <div class="nav-ring"><img src="../assets/Group.png" alt="nav-icon"></div>
-                    </div>
-                    <div class="nav-right">
-                       <div class="nav-img"><img src="../assets/Vector.png" alt="nav-user-icon"></div>
-                        <div class="nav-detail"><span>Nguyen Van A</span>
-                       <div class="nav-drop-down"><img src="../assets/mdi_menu-down.png" alt="nav-menu-down"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="main-body">
-                    <br>
-                    <br>
-
-                    <div class="home-container">
-                        
-                    </div>
-                </div>
-            </section>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - H2PD</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <!-- Font Awesome CDN Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="../scripts/dashboard.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-img">
+            <img src="../assets/logo_iSD.jpg" alt="logo_img">
+            <h2>H2PD</h2>
+            <h2>ADMIN</h2>
         </div>
-
-    </body>
-
-    </html>
+        <ul>
+            <li><a href="/pages/dashboard.html">
+                    <i class="fas fa-user"></i>
+                    <span class="nav-item">Dashboard</span>
+                </a>
+            </li>
+            <li><a href="/pages/home.html">
+                    <i class="fas fa-user"></i>
+                    <span class="nav-item">Home</span>
+                </a>
+            </li>
+            <li><a href="/trash">
+                    <i class="fas fa-tasks"></i>
+                    <span class="nav-item">Trash</span>
+                </a>
+            </li>
+            <li><a href="/orders">
+                    <i class="fas fa-tasks"></i>
+                    <span class="nav-item">Orders</span>
+                </a>
+            </li>
+            <li><a href="/page/products">
+                    <i class="fas fa-tasks"></i>
+                    <span class="nav-item">Products</span>
+                </a>
+            </li>
+            <li><a href="/auth/logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="nav-item">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="container test">
+        <section class="main-body home-container">
+            <div class="dashboard">
+                <div class="dashboard-card blue">
+                    <div class="card-header">
+                        <h3>Sign ups</h3>
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="card-body">
+                        <h2>114</h2>
+                        <p>+25% from last month</p>
+                    </div>
+                </div>
+                <div class="dashboard-card green">
+                    <div class="card-header">
+                        <h3>Revenue</h3>
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="card-body">
+                        <h2>$25,541</h2>
+                        <p>+17.5% from last month</p>
+                    </div>
+                </div>
+                <div class="dashboard-card red">
+                    <div class="card-header">
+                        <h3>Customers</h3>
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="card-body">
+                        <h2>6</h2>
+                        <p>+1 from last month</p>
+                    </div>
+                </div>
+            </div>
+            <div class="charts">
+                <div class="chart-tabs">
+                    <button class="chart-tab" data-chart="signups">Sign Ups</button>
+                    <button class="chart-tab" data-chart="revenue">Revenue</button>
+                    <button class="chart-tab" data-chart="tickets">Customers</button>
+                </div>
+                <div class="chart" id="signups-chart">
+                    <canvas id="signupsChart"></canvas>
+                </div>
+                <div class="chart" id="revenue-chart" style="display: none;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+                <div class="chart" id="tickets-chart" style="display: none;">
+                    <canvas id="ticketsChart"></canvas>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
