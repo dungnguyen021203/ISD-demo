@@ -5,7 +5,7 @@ function UserTrashCards({users=[], buttonTitle ="remove"}){
                     <div class="customer-card" data-name=${user.customer_name}>
                         <div class="customer-details">
                             <div class="logo">
-                                <img src=${user.customer_avatar || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCSz8LW0ISgUJU7DHInjGARqUCUzgDY57qA0N70xf4s5dmVTedLDXU0CndAc6p1CluACc&usqp=CAU'} alt="logo_img">
+                                <img src=${user.customer_avatar || 'https://static.vecteezy.com/system/resources/previews/009/398/577/original/man-avatar-clipart-illustration-free-png.png'} alt="logo_img">
                             </div>
                             <div class="text">
                                 <h2>${user.customer_name}</h2>
@@ -16,7 +16,7 @@ function UserTrashCards({users=[], buttonTitle ="remove"}){
                             </div>
                         </div>
                         <div class="customer-description">
-                            <h4>Bronze</h4>
+                            <h4><span>${user.customer_type}</span></h4>
                             <span class="detail" data-id=${user.customer_id} data-button>Details</span>
                             <span class="customer-remove" data-remove data-button>${buttonTitle}</span>
                         </div>

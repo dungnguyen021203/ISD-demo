@@ -1,5 +1,5 @@
 create database customer_management;
-drop database customer_management;
+-- drop database customer_management;
 use customer_management;
 SET GLOBAL event_scheduler = ON;
 -- Creating the tables
@@ -102,9 +102,9 @@ INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, cu
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Nike', 'Air Max', 'Running', '9', 'Black', 'Synthetic', 199.99, 'Available');
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Adidas', 'Ultra Boost', 'Running', '10', 'White', 'Mesh', 180.50, 'Available');
 INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD001', 1, 1, 2, 399.98, default, 'Paid', default, default, 'Shipped');
-INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD001', 1, 1, 2, 399.98, default, 'Paid', default, default, 'Shipped');
-INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD001', 1, 1, 2, 399.98, default, 'Paid', default, default, 'Shipped');
-INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD002', 2, 2, 1, 180.50, default, 'Pending', default, default, 'Preparing for shipment');
+INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD002', 1, 1, 2, 399.98, default, 'Paid', default, default, 'Shipped');
+INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD003', 1, 1, 2, 399.98, default, 'Paid', default, default, 'Shipped');
+INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD004', 2, 2, 1, 180.50, default, 'Pending', default, default, 'Preparing for shipment');
 
 
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Nike', 'Air Max', 'Running', '9', 'Black', 'Synthetic', 199.99, 'Available');
