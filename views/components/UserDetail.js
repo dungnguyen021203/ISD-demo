@@ -13,13 +13,13 @@ function UserDetail({ user, mode = 'normal' }) {
     ).join('');
     return `
         <div class="user-detail">
-            <h2>Thông tin tài khoản active</h2>
+            <h2>Active Accounts Information</h2>
 
             ${accountsHtml}
         </div>
 
         <div class="user-detail">
-            <h2>Thông tin liên hệ khách hàng</h2>
+            <h2>Contact Information</h2>
 
             <div class="user-detail__content">
                 <div class="block">

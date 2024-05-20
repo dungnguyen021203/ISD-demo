@@ -14,7 +14,7 @@ async function loadUserMenu() {
         resolve(users);
     })
         .then((users) => {
-            container.innerHTML = UserCards({ users: users });
+            container.innerHTML = UserCards({ users: users.customers });
         })
         .then(() => {
             const userNodes = document.querySelectorAll('.customer-card');

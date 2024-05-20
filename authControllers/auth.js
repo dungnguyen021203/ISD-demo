@@ -87,17 +87,21 @@ exports.home = async (req, res, next) => {
             SELECT Customers.*, Salespersons.*
             FROM Customers
             JOIN Salespersons ON Customers.sales_id = Salespersons.sales_id
-            WHERE Customers.is_deleted = FALSE AND Customers.sales_id = ?
+            WHERE Customers.is_deleted = FALSE AND Customers.sales_id In (?, ?, ?)
             ORDER BY Customers.customer_id DESC;
         `;
-        conn.query(query, [2],(error, results) => {
+        conn.query(query, [1,2,3], (error, results) => {
             if (error) {
                 console.error(error);
                 return res
                     .status(500)
                     .send('Error fetching salespersons and customers');
             }
-            return res.json(results);
+            const finalResults = {
+                customers: results,
+                isAdmin: req.user.role,
+            }
+            return res.json(finalResults);
         });
     } else {
         conn.query(
@@ -386,13 +390,14 @@ exports.permanentDelete = async (req, res) => {
 
 //TODO: Show the trash's customers
 exports.trash = async (req, res) => {
+    const saleID = req.cookies.loggedInUserId;
     conn.query(
             `SELECT Customers.*, Salespersons.*
             FROM Customers
             JOIN Salespersons ON Customers.sales_id = Salespersons.sales_id
             WHERE Customers.is_deleted = True AND Customers.sales_id = ?
             ORDER BY Customers.customer_id DESC;
-                `, [2], (error, results) => {
+                `, [saleID], (error, results) => {
                 if (error) {
                     console.error(error);
                     return res.status(500).send('Error fetching customers');
