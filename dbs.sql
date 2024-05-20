@@ -1,4 +1,4 @@
--- create database customer_management;
+create database customer_management;
 -- drop database customer_management;
 use customer_management;
 SET GLOBAL event_scheduler = ON;
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS WebsiteAccounts (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE,
     password VARCHAR(255),
-    active_status BOOLEAN
+    active_status VARCHAR(255)
 );
 
 -- Customer's information
@@ -52,12 +52,6 @@ CREATE TABLE IF NOT EXISTS Shoes (
     shoes_status VARCHAR(255),
     discounted_price DECIMAL(10, 2) DEFAULT NULL
 );
-CREATE TABLE IF NOT EXISTS ShoeImages (
-    image_id INT AUTO_INCREMENT PRIMARY KEY,
-    shoes_id INT,
-    image_url VARCHAR(255),
-    FOREIGN KEY (shoes_id) REFERENCES Shoes(shoes_id)
-);
 
 -- Order's history
 CREATE TABLE IF NOT EXISTS Orders (
@@ -88,29 +82,27 @@ DO
   END$$
 DELIMITER ;
 
-
-
 -- Test
--- select * from customers;
--- select * from orders;
--- select * from shoes;
--- select * from ShoeImages;
--- select * from salespersons;
--- select * from websiteaccounts;
+select * from customers;
+select * from orders;
+select * from shoes;
+select * from salespersons;
+select * from websiteaccounts;
 
 
 INSERT INTO Salespersons (sales_id, sales_name, username, password, role) VALUES (1, 'John Doe', 'johndoe1', '01cce32e81edef5173f05c140d41412c', 'admin');
 INSERT INTO Salespersons (sales_id, sales_name, username, password, role) VALUES (2, 'Jane Smith', 'janesmith', '01cce32e81edef5173f05c140d41412c', 'sales');
-INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user1', 'password1', TRUE);
-INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user2', 'password2', FALSE);
-INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user3', 'password3', FALSE);
-INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Individual', 'CUST001', 'Alice Brown', 'alice@example.com', '555-0101', '123456789', '2023-04-01', 1);
-INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Enterprise', 'CUST002', 'Bob Green', 'bob@example.com', '555-0202', '987654321', '2023-04-02', 2);
-INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Enterprise', 'CUST003', 'Dung Curry', 'dung@example.com', '555-0303', '0348242935', '2023-04-02', 3);
+INSERT INTO Salespersons (sales_id, sales_name, username, password, role) VALUES (3, 'Joe Biden', 'joebiden', '01cce32e81edef5173f05c140d41412c', 'sales');
+INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user1', 'password1', "Active");
+INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user2', 'password2', "Active");
+INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user3', 'password3', "Not Active");
+INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Individual', 'CN28052024001', 'Alice Brown', 'alice@example.com', '555-0101', '123456789', '2023-04-01', 1);
+INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Enterprise', 'DN28052024002', 'Bob Green', 'bob@example.com', '555-0202', '987654321', '2023-04-02', 2);
+INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (3, 'Enterprise', 'DN28052024003', 'Dung Quang', 'dung@example.com', '555-0303', '0348242935', '2023-04-02', 3);
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Nike', 'Air Max', 'Running', '9', 'Black', 'Synthetic', 199.99, 'Available');
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Adidas', 'Ultra Boost', 'Running', '10', 'White', 'Mesh', 180.50, 'Available');
-INSERT INTO ShoeImages (shoes_id, image_url) VALUES (1, 'http://example.com/image1.jpg');
-INSERT INTO ShoeImages (shoes_id, image_url) VALUES (2, 'http://example.com/image2.jpg');
+INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD001', 1, 1, 2, 399.98, default, 'Paid', default, default, 'Shipped');
+INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD001', 1, 1, 2, 399.98, default, 'Paid', default, default, 'Shipped');
 INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD001', 1, 1, 2, 399.98, default, 'Paid', default, default, 'Shipped');
 INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD002', 2, 2, 1, 180.50, default, 'Pending', default, default, 'Preparing for shipment');
 
