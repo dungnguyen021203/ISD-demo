@@ -11,7 +11,7 @@ function UserTrashCards({users=[], buttonTitle ="remove"}){
                                 <h2>${user.customer_name}</h2>
                                 <span>${user.customer_phoneNumber}</span>
                                 <span>${user.deleted_at}</span>
-                                <hr>
+                                <span>Sales: ${user.sales_name}</span>
                                 <span>${user.customer_email}</span>
                             </div>
                         </div>

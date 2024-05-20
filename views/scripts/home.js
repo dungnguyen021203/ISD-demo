@@ -65,7 +65,7 @@ async function loadUserMenu() {
 
                         const data = await response.json();
 
-                        window.location.assign('http://localhost:8000/home');
+                        window.location.assign('http://localhost:8000/trash');
                     };
                 };
             });
@@ -272,8 +272,8 @@ async function sendForm({
             body: JSON.stringify({
                 name: name.value,
                 email: email.value,
-                phone: phone.value,
-                cc: cc.value,
+                phoneNumber: phone.value,
+                citizenID: cc.value,
                 type: type.value,
             }),
             headers: {

@@ -10,7 +10,7 @@ function UserCards({users=[], buttonTitle ="remove"}){
                             <div class="text">
                                 <h2>${user.customer_name}</h2>
                                 <span>${user.customer_phoneNumber}</span>
-                                <hr>
+                                <span>Sales: ${user.sales_name}</span>
                                 <span>${user.customer_email}</span>
                             </div>
                         </div>

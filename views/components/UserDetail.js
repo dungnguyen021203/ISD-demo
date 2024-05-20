@@ -31,6 +31,10 @@ function UserDetail({ user, mode = 'normal' }) {
                     <div class="value">${customer.customer_code}</div>
                 </div>
                 <div class="block">
+                    <div class="prop">Customer Type:</div>
+                    <div class="value">${customer.customer_type}</div>
+                </div>
+                <div class="block">
                     <div class="prop">Citizen ID:</div>
                     <div class="value">${customer.customer_citizenID}</div>
                 </div>
@@ -43,6 +47,10 @@ function UserDetail({ user, mode = 'normal' }) {
                     <div class="value">${
                         customer.customer_phoneNumber
                     }</div>
+                </div>
+                <div class="block">
+                    <div class="prop">Sales:</div>
+                    <div class="value">Jane Smith</div>
                 </div>
             </div>
         </div>

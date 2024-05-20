@@ -84,12 +84,13 @@ exports.home = async (req, res, next) => {
     const saleID = req.cookies.loggedInUserId;
     if (req.user.role === 'admin') {
         const query = `
-            SELECT s.*, c.*
-            FROM Salespersons s
-            JOIN Customers c ON s.sales_id = c.sales_id
-            ORDER BY s.sales_id
+            SELECT Customers.*, Salespersons.*
+            FROM Customers
+            JOIN Salespersons ON Customers.sales_id = Salespersons.sales_id
+            WHERE Customers.is_deleted = FALSE AND Customers.sales_id = ?
+            ORDER BY Customers.customer_id DESC;
         `;
-        conn.query(query, (error, results) => {
+        conn.query(query, [2],(error, results) => {
             if (error) {
                 console.error(error);
                 return res
@@ -100,7 +101,11 @@ exports.home = async (req, res, next) => {
         });
     } else {
         conn.query(
-            'SELECT * FROM Customers Where is_deleted = FALSE and sales_id = ? order by customer_id desc;',
+                `SELECT Customers.*, Salespersons.*
+                FROM Customers
+                JOIN Salespersons ON Customers.sales_id = Salespersons.sales_id
+                WHERE Customers.is_deleted = FALSE AND Customers.sales_id = ?
+                ORDER BY Customers.customer_id DESC;`,
             [saleID],
             (error, results) => {
                 if (error) {
@@ -382,22 +387,25 @@ exports.permanentDelete = async (req, res) => {
 //TODO: Show the trash's customers
 exports.trash = async (req, res) => {
     conn.query(
-        'SELECT * FROM Customers Where is_deleted = TRUE',
-        (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Error fetching customers');
-            }
-            const formattedResults = results.map((customer) => ({
-                ...customer,
-                deleted_at: moment(customer.deleted_at).format(
-                    'YYYY-MM-DD HH:mm:ss'
-                ),
-            }));
+            `SELECT Customers.*, Salespersons.*
+            FROM Customers
+            JOIN Salespersons ON Customers.sales_id = Salespersons.sales_id
+            WHERE Customers.is_deleted = True AND Customers.sales_id = ?
+            ORDER BY Customers.customer_id DESC;
+                `, [2], (error, results) => {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).send('Error fetching customers');
+                }
+                const formattedResults = results.map((customer) => ({
+                    ...customer,
+                    deleted_at: moment(customer.deleted_at).format(
+                        'YYYY-MM-DD HH:mm:ss'
+                    ),
+                }));
 
-            return res.json(formattedResults);
-        }
-    );
+                return res.json(formattedResults);
+            });
 };
 
 //TODO: Edit the customer's details
@@ -409,7 +417,7 @@ exports.editCustomer = async (req, res) => {
     let updatedField = [];
 
     Object.keys(updates).forEach((key) => {
-        if (['name', 'email', 'phoneNumber', 'citizenID'].includes(key)) {
+        if (['name', 'email', 'phoneNumber', 'citizenID', 'type'].includes(key)) {
             updatedField.push(`customer_${key} = ?`);
             queryParams.push(updates[key]);
         }
@@ -484,10 +492,11 @@ exports.customerOrders = async (req, res) => {
     const customerId = req.params.id;
 
     const query = `
-        SELECT Orders.*, Shoes.*
+        SELECT Orders.*, Shoes.*, Customers.*
         FROM Orders
         JOIN Shoes ON Orders.shoes_id = Shoes.shoes_id
-        WHERE Orders.customer_id = ?
+        JOIN Customers ON Orders.customer_id = Customers.customer_id
+        WHERE Orders.customer_id = 1;
     `;
 
     conn.query(query, [customerId], (error, results) => {
