@@ -1,4 +1,5 @@
 import Products from "../components/products.js";
+import loadDash from "./loadDash.js";
 
 const getProducts = async({page}) => {
     const res = await fetch(`/products?page=${page}`, {method: 'GET'});
@@ -34,5 +35,5 @@ async function setPages(){
         }
     })
 }
-
+await loadDash();
 await showProducts({page: 1});

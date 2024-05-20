@@ -4,6 +4,7 @@ import UserTrashCards from '../components/UserTrashCard.js';
 import UserDetail from '../components/UserDetail.js';
 import UserInfor from '../components/UserInfor.js';
 import PopUp from '../components/popup.js';
+import loadDashboard from './loadDash.js';
 let body = document.querySelector('body');
 async function loadUserMenu() {
     container.innerHTML = '';
@@ -13,10 +14,17 @@ async function loadUserMenu() {
         resolve(users);
     })
         .then((users) => {
-            container.innerHTML = UserTrashCards({
-                users: users,
-                buttonTitle: 'Recovery',
-            });
+            if  (users.isAdmin === "admin") {
+                container.innerHTML = UserTrashCards({
+                    users: users.customerTrashAdmin,
+                    buttonTitle: 'Recovery',
+                });
+            } else {
+                container.innerHTML = UserTrashCards({
+                    users: users,
+                    buttonTitle: 'Recovery',
+                });
+            }
         })
         .then(() => {
             const userNodes = document.querySelectorAll('.customer-card');
@@ -95,3 +103,4 @@ async function loadDetail({ id }) {
 }
 
 await loadUserMenu();
+await loadDashboard();

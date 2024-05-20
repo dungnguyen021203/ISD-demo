@@ -3,6 +3,7 @@ import UserCards from '../components/UserCard.js';
 import UserDetail from '../components/UserDetail.js';
 import UserInfor from '../components/UserInfor.js';
 import PopUp from '../components/popup.js';
+import loadDashboard from './loadDash.js';
 const addUser = document.querySelector('[data-add-user]');
 let body = document.querySelector('body');
 async function loadUserMenu() {
@@ -14,7 +15,11 @@ async function loadUserMenu() {
         resolve(users);
     })
         .then((users) => {
-            container.innerHTML = UserCards({ users: users.customers });
+            if (users.isAdmin === "admin"){
+                container.innerHTML = UserCards({ users: users.customers });
+            } else {
+                container.innerHTML = UserCards({ users: users});
+            }
         })
         .then(() => {
             const userNodes = document.querySelectorAll('.customer-card');
@@ -291,5 +296,7 @@ async function sendForm({
     }
 }
 
+
 await loadUserMenu();
+await loadDashboard();
 addUser.onclick = () => loadUserForm({ mode: 'add' });

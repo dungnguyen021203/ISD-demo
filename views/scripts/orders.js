@@ -1,5 +1,6 @@
 import Orders from "../components/order.js";
 import Popup2 from "../components/popup2.js"
+import loadDashboard from "./loadDash.js";
 
 const getOrders = async() => {
     const res = await fetch('/customerOrders/1', {method: 'GET'});
@@ -37,4 +38,5 @@ function setPopup() {
     });
 }
 
+await loadDashboard();
 await showOrders();

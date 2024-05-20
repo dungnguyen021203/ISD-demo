@@ -170,13 +170,13 @@ const generateCustomId = async (customerType, date) => {
 };
 
 exports.addCustomer = async (req, res) => {
-    const { name, phone, cc, email, type, salesid } = req.body;
+    const { name, phoneNumber, citizenID, email, type } = req.body;
     const saleID = req.cookies.loggedInUserId;
-    console.log(salesid, saleID);
 
     try {
         const date = new Date();
         const customerCode = await generateCustomId(type, date);
+        const randomSalesAgent = Math.floor(Math.random() * 3) + 1;
 
         const insertCustomerQuery = `
         INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id)
@@ -186,17 +186,7 @@ exports.addCustomer = async (req, res) => {
         if (req.user.role === 'admin') {
             conn.query(
                 insertCustomerQuery,
-                [
-                    2,
-                    type,
-                    customerCode,
-                    name,
-                    email,
-                    phone,
-                    cc,
-                    date,
-                    salesid,
-                ],
+                [randomSalesAgent, type, customerCode, name, email, phoneNumber, citizenID, date , randomSalesAgent],
                 (customerError, customerResults) => {
                     if (customerError) {
                         console.error(customerError);
@@ -212,17 +202,7 @@ exports.addCustomer = async (req, res) => {
         } else {
             conn.query(
                 insertCustomerQuery,
-                [
-                    saleID,
-                    type,
-                    customerCode,
-                    name,
-                    email,
-                    phone,
-                    cc,
-                    date,
-                    saleID,
-                ],
+                [saleID, type, customerCode, name, email, phoneNumber, citizenID, date, randomSalesAgent],
                 (customerError, customerResults) => {
                     if (customerError) {
                         console.error(customerError);
@@ -242,17 +222,15 @@ exports.addCustomer = async (req, res) => {
     }
 };
 
-// TODO: View a customer's details
 exports.details = async (req, res) => {
     const customerId = req.params.id;
-    const saleID = req.cookies.loggedInUserId;
 
     const customerQuery =
-        'SELECT * FROM Customers WHERE customer_id = ? and sales_id = ?';
+        'SELECT * FROM Customers WHERE customer_id = ?';
 
     conn.query(
         customerQuery,
-        [customerId, 2],
+        [customerId],
         (error, customerResults) => {
             if (error) {
                 console.error(error);
@@ -296,25 +274,6 @@ exports.details = async (req, res) => {
     );
 };
 
-//TODO: View salesperson's details
-exports.salespersonDetails = async (req, res) => {
-    const query = 'SELECT * FROM Salespersons WHERE role = "sales"';
-    if (req.user.role === 'admin') {
-        conn.query(query, (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Error fetching salespersons');
-            }
-            return res.json(results);
-        });
-    } else {
-        return res
-            .status(403)
-            .send('You are not authorized to view this page');
-    }
-};
-
-//TODO: Soft delete the customer and move it to the trash can, it can recover before 30 days
 exports.deleteCustomer = async (req, res) => {
     const customerId = req.params.id;
 
@@ -335,7 +294,6 @@ exports.deleteCustomer = async (req, res) => {
     });
 };
 
-//TODO: Recover the customer from the trash can if possible
 exports.recoverCustomer = async (req, res) => {
     const customerId = req.params.id;
 
@@ -358,62 +316,59 @@ exports.recoverCustomer = async (req, res) => {
     });
 };
 
-//TODO: Permantly delete the customer from the trash can for admin only
-exports.permanentDelete = async (req, res) => {
-    const customerId = req.params.id;
-    const permanentlyDeleteQuery =
-        'DELETE FROM Customers WHERE customer_id = ?;';
+exports.trash = async (req, res) => {
+    const salesId = req.cookies.loggedInUserId;
     if (req.user.role === 'admin') {
         conn.query(
-            permanentlyDeleteQuery,
-            [customerId],
-            (error, results) => {
-                if (error) {
-                    console.error(error);
-                    return res.status(500).send('Error deleting customer');
-                }
-                if (results.affectedRows > 0) {
-                    return res.json({
-                        message: 'Customer deleted successfully',
-                    });
-                } else {
-                    return res.status(404).send('Customer not found');
-                }
-            }
-        );
-    } else {
-        return res
-            .status(403)
-            .send('You are not authorized to do this action');
+                `SELECT Customers.*, Salespersons.*
+                FROM Customers
+                JOIN Salespersons ON Customers.sales_id = Salespersons.sales_id
+                WHERE Customers.is_deleted = True AND Customers.sales_id in (?, ?, ?)
+                ORDER BY Customers.customer_id DESC;
+                    `, [1,2,3], (error, results) => {
+                    if (error) {
+                        console.error(error);
+                        return res.status(500).send('Error fetching customers');
+                    }
+                    const formattedResults = results.map((customer) => ({
+                        ...customer,
+                        deleted_at: moment(customer.deleted_at).format(
+                            'YYYY-MM-DD HH:mm:ss'
+                        ),
+                    }));
+
+                    const finalResults = {
+                        customerTrashAdmin: formattedResults,
+                        isAdmin: req.user.role,
+                    }
+
+                    return res.json(finalResults);
+                });
+        } else {
+            conn.query(
+                `SELECT Customers.*, Salespersons.*
+                FROM Customers
+                JOIN Salespersons ON Customers.sales_id = Salespersons.sales_id
+                WHERE Customers.is_deleted = True AND Customers.sales_id = ?
+                ORDER BY Customers.customer_id DESC;
+                    `, [salesId], (error, results) => {
+                    if (error) {
+                        console.error(error);
+                        return res.status(500).send('Error fetching customers');
+                    }
+                    const formattedResults = results.map((customer) => ({
+                        ...customer,
+                        deleted_at: moment(customer.deleted_at).format(
+                            'YYYY-MM-DD HH:mm:ss'
+                        ),
+                    }));
+
+                    return res.json(formattedResults);
+                });
     }
-};
+}; 
 
-//TODO: Show the trash's customers
-exports.trash = async (req, res) => {
-    const saleID = req.cookies.loggedInUserId;
-    conn.query(
-            `SELECT Customers.*, Salespersons.*
-            FROM Customers
-            JOIN Salespersons ON Customers.sales_id = Salespersons.sales_id
-            WHERE Customers.is_deleted = True AND Customers.sales_id = ?
-            ORDER BY Customers.customer_id DESC;
-                `, [saleID], (error, results) => {
-                if (error) {
-                    console.error(error);
-                    return res.status(500).send('Error fetching customers');
-                }
-                const formattedResults = results.map((customer) => ({
-                    ...customer,
-                    deleted_at: moment(customer.deleted_at).format(
-                        'YYYY-MM-DD HH:mm:ss'
-                    ),
-                }));
 
-                return res.json(formattedResults);
-            });
-};
-
-//TODO: Edit the customer's details
 exports.editCustomer = async (req, res) => {
     const customerId = req.params.id;
     const updates = req.body;
@@ -450,7 +405,6 @@ exports.editCustomer = async (req, res) => {
     });
 };
 
-//TODO: Show the products showcase
 exports.productsShowcase = async (req, res) => {
     const shoesPerPage = 9;
     const page = req.query.page || 1;
@@ -492,7 +446,7 @@ exports.productsShowcase = async (req, res) => {
     );
 };
 
-// TODO: Show the customer's orders
+
 exports.customerOrders = async (req, res) => {
     const customerId = req.params.id;
 
@@ -501,10 +455,10 @@ exports.customerOrders = async (req, res) => {
         FROM Orders
         JOIN Shoes ON Orders.shoes_id = Shoes.shoes_id
         JOIN Customers ON Orders.customer_id = Customers.customer_id
-        WHERE Orders.customer_id = 1;
+        WHERE Orders.customer_id in (?, ?, ?, ?);
     `;
 
-    conn.query(query, [customerId], (error, results) => {
+    conn.query(query, [1,2,3,4], (error, results) => {
         if (error) {
             console.error(error);
             return res.status(500).send('Error fetching orders');
@@ -525,85 +479,4 @@ exports.customerOrders = async (req, res) => {
 
         return res.json(formattedResults);
     });
-};
-
-//TODO: Search for a customer
-exports.customerSearch = async (req, res) => {
-    const search = req.query.search;
-    const trashSearch = req.query.trashSearch;
-
-    const query = `
-        SELECT *
-        FROM Customers
-        WHERE customer_name LIKE ?`;
-    const trashQuery = `SELECT * FROM Customers WHERE customer_name LIKE ? AND is_deleted = TRUE`;
-    if (trashSearch) {
-        conn.query(trashQuery, [`%${trashSearch}%`], (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Error searching customers');
-            }
-            res.json(results);
-        });
-    } else {
-        conn.query(query, [`%${search}%`], (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Error searching customers');
-            }
-            res.json(results);
-        });
-    }
-};
-
-//TODO: Sort the customers by name
-exports.customerSorting = async (req, res) => {
-    const sort = req.query.sort;
-    const trashSort = req.query.trashSort;
-    const query = `SELECT * FROM Customers ORDER BY customer_name ${sort}`;
-    const trashQuery = `SELECT * FROM Customers WHERE is_deleted = TRUE ORDER BY customer_name ${trashSort}`;
-
-    if (trashSort) {
-        conn.query(trashQuery, (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Error sorting customers');
-            }
-            res.json(results);
-        });
-    } else {
-        conn.query(query, (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Error sorting customers');
-            }
-            res.json(results);
-        });
-    }
-};
-
-//TODO: Filter the customers by category
-exports.customerFilterCategory = async (req, res) => {
-    const category = req.query.category;
-    const trashCategory = req.query.trashCategory;
-    const query = `SELECT * FROM Customers WHERE customer_type = ?`;
-    const trashQuery = query + `AND is_deleted = TRUE`;
-
-    if (trashCategory) {
-        conn.query(trashQuery, [trashCategory], (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Error filtering customers');
-            }
-            res.json(results);
-        });
-    } else {
-        conn.query(query, [category], (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Error filtering customers');
-            }
-            res.json(results);
-        });
-    }
 };
