@@ -1,5 +1,5 @@
 create database customer_management;
--- drop database customer_management;
+drop database customer_management;
 use customer_management;
 SET GLOBAL event_scheduler = ON;
 -- Creating the tables
@@ -96,9 +96,9 @@ INSERT INTO Salespersons (sales_id, sales_name, username, password, role) VALUES
 INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user1', 'password1', "Active");
 INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user2', 'password2', "Active");
 INSERT INTO WebsiteAccounts (username, password, active_status) VALUES ('user3', 'password3', "Not Active");
-INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Individual', 'CN28052024001', 'Alice Brown', 'alice@example.com', '555-0101', '123456789', '2023-04-01', 1);
-INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Enterprise', 'DN28052024002', 'Bob Green', 'bob@example.com', '555-0202', '987654321', '2023-04-02', 2);
-INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (3, 'Enterprise', 'DN28052024003', 'Dung Quang', 'dung@example.com', '555-0303', '0348242935', '2023-04-02', 3);
+INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Individual', 'CN28052024001', 'Alice Brown', 'alice@example.com', '0348242935', '001203012946', '2023-04-01', 1);
+INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (2, 'Enterprise', 'DN28052024002', 'Bob Green', 'bob@example.com', '0986492032', '001203012949', '2023-04-02', 2);
+INSERT INTO Customers (sales_id, customer_type, customer_code, customer_name, customer_email, customer_phoneNumber, customer_citizenID, add_date, website_account_id) VALUES (3, 'Enterprise', 'DN28052024003', 'Dung Quang', 'dung@example.com', '0783193932', '001203012948', '2023-04-02', 3);
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Nike', 'Air Max', 'Running', '9', 'Black', 'Synthetic', 199.99, 'Available');
 INSERT INTO Shoes (shoes_brand, shoes_name, shoes_type, shoes_size, shoes_color, shoes_material, shoes_price, shoes_status) VALUES ('Adidas', 'Ultra Boost', 'Running', '10', 'White', 'Mesh', 180.50, 'Available');
 INSERT INTO Orders (order_code, customer_id, shoes_id, order_amount, order_cost, order_buyDate, payment_status, payment_date, shipment_date, shipment_process) VALUES ('ORD001', 1, 1, 2, 399.98, default, 'Paid', default, default, 'Shipped');
